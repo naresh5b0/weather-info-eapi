@@ -1,0 +1,18 @@
+https:
+  host: "8082"
+  response:
+    timeout: "30000"      
+api:
+  auto-discovery-id: "18154443"
+  name: "weather-info-eapi"
+  version: "v1"
+  path: "/api/exp/v1/*"
+
+  
+weather-info:
+  host: "weather-info-papi.us-e2.cloudhub.io"
+  path:
+    base: "/api/pro/v1"
+    weather: "/weatherInfo"
+  client-id:  "![JO8hz3ran8vKQYo+T+YwBO13jvzHc2SXfLXmHM7kgqbjYe63kzTBVg==]"
+  client-secret: "![Dco2nWd+dU16v1IFpj91ZNZs9CVHMtNWsiF5HNGFJ6hrl7XDCXIRRA==]"          

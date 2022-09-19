@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Weather_Proc_Request_configuration" doc:name="HTTP Request configuration" doc:id="49b38627-0558-49b7-8a4f-30c516b2ccf6" basePath="${secure::weather-info.path.base}" responseTimeout="${secure::https.response.timeout}">
+		<http:request-connection host="${secure::weather-info.host}" protocol="HTTPS"/>
+	</http:request-config>
+	<flow name="weather-info-eapi-implFlow" doc:id="00db22ee-f1b7-4fcb-8567-1237b32d78ca" >
+		<logger level="INFO" doc:name="Logger" doc:id="2228751c-6179-452f-a2b4-add9990b4fa3" message="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	&quot;forecast&quot;: attributes.queryParams.forecast default &quot;&quot;,&#10;	&quot;ipAddress&quot;: if(isEmpty(attributes.queryParams.ipAddress)) (attributes.headers.'X-Real-IP') else (attributes.queryParams.ipAddress) default &quot;&quot;,&#10;	&quot;addressLine1&quot;: attributes.queryParams.addressLine1 default &quot;&quot;,&#10;	&quot;addressLine2&quot;: attributes.queryParams.addressLine2 default &quot;&quot;,	&#10;	&quot;city&quot;: attributes.queryParams.city default &quot;&quot;,&#10;	&quot;state&quot;: attributes.queryParams.state default &quot;&quot;,&#10;	&quot;zipCode&quot;: attributes.queryParams.zipCode default &quot;&quot;,&#10;}]"/>
+		<http:request method="GET" doc:name="Weather Info Process API Call" doc:id="378085a4-4e21-4435-9d62-f326ba77238f" config-ref="HTTP_Weather_Proc_Request_configuration" path="${secure::weather-info.path.weather}">
+			<http:headers ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+	"correlationId": vars.correlationId,
+	"client_id": Mule::p('secure::weather-info.client-id'),
+	"client_secret": Mule::p('secure::weather-info.client-secret')
+	
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"forecast": attributes.queryParams.forecast default "",
+	"ipAddress": if(isEmpty(attributes.queryParams.ipAddress)) (attributes.headers.'X-Real-IP') else (attributes.queryParams.ipAddress) default "",
+	"addressLine1": attributes.queryParams.addressLine1 default "",
+	"addressLine2": attributes.queryParams.addressLine2 default "",	
+	"city": attributes.queryParams.city default "",
+	"state": attributes.queryParams.state default "",
+	"zipCode": attributes.queryParams.zipCode default "",
+}]]]></http:query-params>
+		</http:request>
+	</flow>
+</mule>
