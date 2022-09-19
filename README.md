@@ -1,1 +1,1 @@
-# This is experience layer of the API which exposed to end customer 
+# This is experience layer API which exposed to end customer 
